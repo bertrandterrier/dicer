@@ -1,0 +1,190 @@
+tokens:
+  - id: 1001
+    name: "lpar"
+    symbol: "("
+    regex: \(
+  - id: 1002
+    name: "rpar"
+    symbol: ")"
+    regex: \)
+  - id: 1003
+    name: "lbracket"
+    symbol: "["
+    regex: \\[
+  - id: 1004
+    name: "rbracket"
+    symbol: "]"
+    regex: \\]
+  - id: 1005
+    name: "lbrace"
+    symbol: "{"
+    regex: \\{
+  - id: 1006
+    name: "rbrace"
+    symbol: "}"
+    regex: \\}
+  - id: 1009
+    name: lmath
+    symbol: ⟨
+    regex: '⟨'
+  - id: 1010
+    name: rmath
+    symbol: ⟩ 
+    regex: '⟩'
+  - id: 1011
+    name: snglquot
+    symbol: \' 
+    regex: "'"
+  - id: 1012
+    name: dblquot
+    symbol: \" 
+    regex: '"'
+  - id: 1101
+    name: plus
+    symbol: +
+    regex: '\+'
+  - id: 1102
+    name: minus
+    symbol: "-" 
+    regex: \-
+  - id: 1103
+    name: "x"
+    symbol: "x"
+    regex: \[xX] 
+  - id: 1104
+    name: slash
+    symbol: '/' 
+    regex: / 
+  - id: 1115
+    name: top
+    symbol: "^"
+    regex: '^'
+  - id: 1116
+    name: floor
+    symbol: "_"
+    regex: _
+  - id: 1117
+    name: star
+    symbol: "*"
+    regex: \*
+  - id: 1120
+    name: "is"
+    symbol: "="
+    regex: =
+  - id: 1121
+    name: "is_equal"
+    symbol: "=="
+    regex: ={2}
+  - id: 1122
+    name: "not"
+    symbol: "~"
+    regex: \~
+  - id: 1123
+    name: "is_gt"
+    symbol: ">"
+    regex: \>
+  - id: 1124
+    name: "is_gteq"
+    symbol: ">="
+    regex: \>=
+  - id: 1125
+    name: "is_st"
+    symbol: "<"
+    regex: <
+  - id: 1126
+    name: "is_steq"
+    regex: "<="
+    regex: <=
+  - id: 1200
+    name: "space"
+    symbol: " "
+    regex: \s
+  - id: 1201
+    name: "amp"
+    symbol: "&"
+    regex: \&
+  - id: 1202
+    name: "pipe"
+    symbol: "|"
+    regex: \\|
+  - id: 1203
+    name: "altpipe"
+    symbol: "|"
+    regex: \\|\\|
+  - id: 1204
+    name: "colon"
+    symbol: ":"
+    regex: ':'
+  - id: 1301
+    name: "exclam"
+    symbol: "!"
+    regex: \\!
+  - id: 1302
+    name: "qmark"
+    symbol: "?"
+    regex: \\?
+  - id: 1303
+    name: "peso"
+    symbol: "$"
+    regex: '$'
+  - id: 1304
+    name: "hash"
+    symbol: "#"
+    regex: '#'
+  - id: 1305
+    name: "at"
+    symbol: "@"
+    regex: '@' 
+  - id: 1306
+    name: "perc"
+    symbol: "%"
+    regex: '%' 
+  - id: 2000
+    name: "esc"
+    symbol: "\\"
+    regex: '\' 
+  - id: 2001
+    name: "space"
+    symbol: " " 
+    regex: '\s*'
+  - id: 2002
+    name: "newline"
+    symbol: "\n"
+    regex: '\n'
+  - id: 2011
+    name: "comma"
+    symbol: ","
+    regex: ','
+  - id: 2012
+    name: "punkt"
+    symbol: "."
+    regex: '.'
+  - id: 3000
+    name: "eof"
+    symbol: "#?///*eof*///"
+    regex: false
+  - id: 4000
+    name: "null"
+    symbol: "0"
+    regex: '0'
+  - id: 4001
+    name: "num"
+    regex: '[1-9][0-9]+'
+  - id: 4002
+    name: "decim"
+    regex: '0{0,1}\.[0-9]+'
+  - id: 4010
+    name: "ident"
+    regex: '[a-zA-Z_]+'
+  - id: 4100
+    name: "lit0"
+    regex: '\\.'
+  - id: 4011
+    name: "lit1"
+    regex: \'.*' 
+  - id: 4012
+    name: "lit2"
+    regex: '".*"'
+  - id: 4013
+    name: "ignore_line"
+    regex: '/{3}'
