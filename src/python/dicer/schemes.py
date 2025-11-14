@@ -1,9 +1,8 @@
-from enum import Enum, EnumType
-from pathlib import Path
-from typing import Callable, Literal
-import yaml
+from enum import Enum
+from typing import Literal
 
-import dicer as dcr
+from dicer.io_ops import read_tkn_types
+
 
 class eof(str):
     def __new__(cls) -> "eof":
@@ -13,29 +12,6 @@ EOF = eof()
 
 class TokenType(Enum):
     pass
-
-def load_tkn_types(_path: str|Path=dcr.DCR_DATA_SHARED,
-                   _needed_keys: list[str] = ['name', 'id'],
-                   _formatter: dict[str, Callable[..., str]] = {
-                        'name': lambda x: str(x).upper()
-                    }) -> list[dict]:
-    with open(_path, 'r') as f:
-        raw: list[dict] = yaml.load(f, Loader=yaml.Loader)
-    
-    result: list[dict] = []
-    for d in raw:
-        var: dict = {}
-        for key in _needed_keys:
-            if not key in var.keys():
-                raise LookupError("Need certain keys...")
-        for k,v in d.items():
-            fmt: Callable|None = _formatter.get(k)
-            if fmt:
-                v = fmt(v)
-            var[k] = v
-        result.append(var)
-    return result
-
 def set_tkn_types(data: list[dict]):
     for entry in data:
         setattr(TokenType,
@@ -43,7 +19,7 @@ def set_tkn_types(data: list[dict]):
                 int(entry.get('id', -1)))
     return
 
-set_tkn_types(load_tkn_types())
+set_tkn_types(read_tkn_types())
 
 class Point(tuple):
     __slots__ = ("ROW", "COL", "TYPE")
@@ -64,7 +40,6 @@ class Point(tuple):
             return Point(other[0], other[1], '_test')
         except:
             return None
-
 
     def __eq__(self, other) -> bool:
         other = self._get_comp(other)

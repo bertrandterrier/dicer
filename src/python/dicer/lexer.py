@@ -1,4 +1,3 @@
-from enum import Enum, EnumType
 import dicer as dcr
 
 import dicer as dcr
