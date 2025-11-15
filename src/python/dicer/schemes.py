@@ -2,9 +2,10 @@ import re
 from typing import Any, Literal, LiteralString, Pattern, Iterator 
 
 # --- Constants ---
-LINEBREAK = "\n"
+NEWLINE = "\n"
 SPACE = " "
 SLASH = "/"
+TERM = ";"
 
 # --- EOF ---
 class eof(str):
@@ -71,7 +72,7 @@ class Point(tuple):
         return self.ROW == var.ROW and self.COL == var.COL
 
 
-class TokenType(str):
+class DcrTokenType(str):
     __slots__ = ("category","regex", "symbols",
                  "subtypes", "_id", "_help")
     def __new__(cls,
@@ -82,7 +83,7 @@ class TokenType(str):
                 category: str = "OTHER",
                 help_text: str|None = None,
                 subtypes: list[dict] = [],
-                ) -> "TokenType":
+                ) -> "DcrTokenType":
         inst = super().__new__(cls, name.upper())
         inst.regex = [e for e in regex]
         inst.symbols = [e for e in symbols]
@@ -116,13 +117,10 @@ class TokenType(str):
 
     def match(self,
               arg: str,
-              match_subtypes: bool = True,
               ) -> bool:
         for expr in self.regex:
             if re.match(expr, arg.lower()):
                 return True
-        if match_subtypes:
-            return bool(self.match_subtype(arg))
         else:
             return False
 
@@ -162,7 +160,7 @@ class TokenType(str):
         if self.help():
             txt.append(f"{2*SPACE}Help >>")
             txt.append(f"{4*SPACE}".join(self._help.split("\n")))
-        result = LINEBREAK.join(txt)
+        result = NEWLINE.join(txt)
         if instant_print:
             print(result)
         return result
@@ -176,8 +174,8 @@ class TokenData:
         self._raw: dict[str, Any] = {str(k): v for k, v in data.items()}
         self._meta: dict[str, Any] = {}
         self._reg: dict[str, list[str]] = {}
-        self._tkns: dict[str, TokenType] = {}
-        self._flat_data: list[TokenType] = [] 
+        self._tkns: dict[str, DcrTokenType] = {}
+        self._flat_data: list[DcrTokenType] = [] 
 
         if ignore_pattern:
             self._ipttrn = re.compile(ignore_pattern)
@@ -199,8 +197,8 @@ class TokenData:
             self._tkns[str(tkn)] = tkn
 
     @staticmethod
-    def mkreg(data: dict) -> list[TokenType]:
-        result: list[TokenType] = []
+    def mkreg(data: dict) -> list[DcrTokenType]:
+        result: list[DcrTokenType] = []
 
         for key, val in data.items():
             if not isinstance(val, dict):
@@ -213,9 +211,11 @@ class TokenData:
                     val[pl].append(val[sg])
                 # If splitted into different regex operatons
                 if 'subtypes' in val.keys():
-                    val[pl] += val['subtypes'].get('regex', [])
+                    val[pl] += val['subtypes'].get('regexes', [])
+                    if val['subtypes'].get('regex'):
+                        val[pl].append(val['subtypes']['regex'])
 
-            tkn = TokenType(val['id'],
+            tkn = DcrTokenType(val['id'],
                             val.get('name', 'unknown').upper(),
                             regex = val.get('regexes', []),
                             symbols = val.get('symbols', []),

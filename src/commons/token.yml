@@ -109,16 +109,16 @@ tokens:
       name: "rpar"
       descr: right parenthesis
       symbol: ")"
-      regex: "'"
+      regex: \'
     - id: 1002
       name: "rbrack"
       descr: right square bracket
-      symbol: "["
-      regex: '\['
-    - id: 1003
-      descr: "]"
-      symbol: "left square bracket"
+      symbol: "]"
       regex: '\]'
+    - id: 1003
+      symbol: "["
+      descr: "left square bracket"
+      regex: '\['
     - id: 1004
       descr: "right curly bracket"
       symbol: "}"
@@ -129,13 +129,14 @@ tokens:
       symbol: "{"
       regex: '\{'
     - id: 1006
-      descr: "lmath"
-      symbol: "left math angle bracket"
+      name: "lmath"
+      descr: "left math angle bracket"
+      symbol: "⟨"
       regex: '⟨'
     - id: 1007
       name: "rmath"
       descr: right math angle bracket
-      symbol: ⟩ 
+      symbol: "⟩" 
       regex: '⟩'
     - id: 1008
       name: "squote"
@@ -170,7 +171,7 @@ tokens:
     - id: 1014
       name: "lilcmt"
       descr: left in-line comment
-      symbols: "~>"
+      symbol: "~>"
       regex: '~>'
     - id: 1015
       name: "rilcmt"
@@ -178,34 +179,25 @@ tokens:
       symbol: "<~"
       regex: '<~'
     - id: 1016
-      name: "rllrule"
-      descr: right locally limited element rule
-      symbol: ">-"
-      regex: '>-'
+      name: "lellrule"
+      descr: element-limited local rule, left delim
+      symbol: "<<-"
+      regex: '<{2}-'
     - id: 1017
-      name: "lllrule"
-      descr: left locally limited rule
-      symbols: "-<"
-      regex: '-<'
+      name: "rellrule"
+      descr: element-limited local rule, right delim
+      symbol: ">>-"
+      regex: '>{2}-'
     - id: 1018
-      name: "rullrule"
-      descr: right unlimited local rule
-      symbol: "<-<"
-      regex: '<-<'
-    - id: 1019
-      name: "lullrule"
-      descr: right unlimited local rule
-      symbol: ">->"
-      regex: '>->'
-    - id: 1020
-      name: "rgrule"
-      descr: right global rule
-      symbol: ">=>"
-    - id: 1021
       name: "lgrule"
-      descr: left global rule
+      descr: global rule, left delim
       symbol: "<=<"
-      regex: "<=<"
+      regex: '<=<'
+    - id: 1019
+      name: "rgrule"
+      descr: global rule, right delim
+      symbol: ">=>"
+      regex: '>=>'
   trigger:
     - id: 1100
       name: "exmark"
@@ -218,21 +210,41 @@ tokens:
       symbol: "?"
       regex: '\?'
     - id: 1102
+      name: "hash"
+      descr: number sign -- TAG NAME 
+      symbol: "#"
+      regex: '#'
+    - id: 1103
       name: "peso"
       descr: Peso/dollar -- REFERENCE
       symbol: "$"
       regex: '\$'
-    - id: 1103
-      name: "hash"
-      descr: number sign -- EVALUE 
-      symbol: "#"
-      regex: '#'
-  connectives:
-    - id: 1200
+    - id: 1104
+      name: "at"
+      descr: Unbound attribute reference
+      symbol: "@"
+      regex: '@'
+    - id: 1105
       name: "amp"
-      descr: Ampersand -- CONCATENATION "AND"
+      descr: Walk procedure -- EVALUATING
       symbol: "&"
       regex: '&'
+    - id: 1106
+      name: "ddef"
+      descr: Colon + Equal Sign -- NAMING
+      symbol: ":="
+      regex: ':='
+    - id: 1107
+      name: dcolon
+      descr: double colon -- ATTRIBUTE SETTING
+      symbol: "::"
+      regex: ':{2}'
+  connectives:
+    - id: 1200
+      name: "dot"
+      descr: period -- CONCATENATION "AND"
+      symbol: "."
+      regex: '\.'
     - id: 1201
       name: "bar"
       descr: Pipe bar -- PIPE
@@ -253,17 +265,6 @@ tokens:
       descr: Bottom limiter
       symbol: "_"
       regex: '_'
-  weak_connectives:
-    - id: 1300
-      name: "at"
-      descr: Attribute connective
-      symbol: "@"
-      regex: '@'
-    - id: 1301
-      name: "dot"
-      descr: Method
-      symbol: "."
-      regex: '\.'
   operators:
     - id: 1400
       name: "plus"
@@ -275,42 +276,42 @@ tokens:
       descr: Subtraction or negative concatenation procedure
       symbol: "-"
       regex: '-'
-    - id: 1401
+    - id: 1402
       name: "star"
       descr: Multiplication
       symbol: "*"
       regex: '\*'
-    - id: 1402
+    - id: 1403
       name: "slash"
       descr: Division or negative modification procedure
       symbol: "/"
       regex: '/'
-    - id: 1403
+    - id: 1404
       name: "dslash.uscore"
       descr: floor operation
       symbol: "/_"
       regex: '/_'
-    - id: 1404
+    - id: 1405
       name: "dslash.top"
       descr: roof operation
       symbol: "/^"
       regex: '/^'
-    - id: 1405
+    - id: 1406
       name: "gt"
       descr: Greater than
       symbol: ">"
       regex: '>'
-    - id: 1406
+    - id: 1407
       name: "gte"
       descr: Greater than or equal
       symbol: ">="
       regex: '>='
-    - id: 1407
+    - id: 1408
       name: "lt"
       descr: Lower than
       symbol: "<"
       regex: '<'
-    - id: 1408
+    - id: 1409
       name: "lte"
       descr: Smaller than or equal
       symbol: "<="
@@ -320,7 +321,7 @@ tokens:
       name: "dice"
       descr: Dice command
       symbols: ["dice", "d", "D", "DICE"]
-      regex: ['[dD]', '[dD][iI][cC][eE]']
+      regexes: ['[dD]', '[dD][iI][cC][eE]']
     - id: 1501
       name: "query"
       descr: Query
@@ -349,12 +350,13 @@ tokens:
       descr: Protected call
       symbols: ["try", "Try", "TRY", "p", "P"]
       regexes: ['[pP]', '[tT]', '[tT][rR][yY]']
-    - if: 1506
+    - id: 1506
       name: "if"
       descr: Condition Command
       symbols: ["if", "If", "IF"]
       regex: '[iI][fF]'
-    - while: 1507
+    - id: 1507
+      name: while
       descr: Condition loop
       symbols: ["wh", "Wh", "WH","while", "While", "WHILE"]
       regexes: ['[wW][hH]', '[wW][hH][iI][lL][eE]']
@@ -367,16 +369,16 @@ tokens:
           regex: '\d+'
           quantity: 1
           idents: ["max"]
-          types: ["int"]
+          types: ["integer"]
         - name: "range"
           regex: '([\-\+]{0,1}\d*):([\-\+]{0,1}\d*):([\-\+]{0,1}\d+)'
           quantity: 3
-          identifiers: ["min", "steps", "max"]
+          idents: ["min", "steps", "max"]
           defaults: [1, 1, false]
           types:
-            - ["null", "int"]
-            - ["null", "int"]
-            - "int"
+            - ["null", "integer"]
+            - ["null", "integer"]
+            - "integer"
     - id: 1600
       name: "odds"
       descr: Odds Specification
@@ -385,14 +387,30 @@ tokens:
           regex: '([1-9][0-9]*)\.{0,1}([1-9]*)\|([1-9][0-9]*)\.{0,1}(\d*)'
           quantity: 4
           idents: ["win", "critical_win", "loss", "critical_loss"]
-          types: ["int", "int|null", "int", "int|null"]
+          types: ["integer", "integer|null", "integer", "integer|null"]
           defaults: [false, 0, false, 0]
         - name: "tenary"
           regex: '([1-9][0-9]+)\.{0,1}([0-9]*)\|([1-9][0-9]+)\.([0-9]+)\|([1-9][0-9]+)'
-        - idents: ["win", "critical_win", "loss", "critical_loss", "neutral"]
-        - types: ["int", "int|null", "int", "int|null", "int"]
-        - defaults: [false, 1, false, 1, false]
+          idents: ["win", "critical_win", "loss", "critical_loss", "neutral"]
+          types: ["integer", "integer|null", "integer", "integer|null", "integer"]
+          defaults: [false, 1, false, 1, false]
     - id: 1601
       name: "chance"
       descr: Chance percentage
       regex: '(\d{0,2}[1-9])%'
+  special_constructs:
+    - id: 1700
+      name: omult
+      descr: object multiplicator
+      subtypes:
+        - name: number
+          regex: '([1-9]\d*)[xX]'
+          idents: ["value"]
+          quantity: 1
+          types: ["integer"]
+          defaults: [false]
+        - name: fraction
+          regex: '([0-9]{0,1})\.(\d+)x'
+          idents: ["integer", "decimals"]
+          quantity: 2
+          defaults: [0, false]
