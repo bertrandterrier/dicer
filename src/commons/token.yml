@@ -10,21 +10,95 @@ _meta:
       dictionary and extract this to flatten.
   fields:
     id: >-
-      Containing three digit number with first digit as higher group and other 
-      digits counting up.
-    name:
-      String with real name.
-    descr:
-      (multiline) string with description.
-    symbol: Optional field! String with symbol, if possible.
+      NON-OPTIONAL
+      integer or floating point number
+    name: >-
+      NON-OPTIONAL
+      string
+      Token type name
+    descr: >-
+      NON-OPTIONAL
+      multi-line string
+      short helper description
+    symbol: >-
+      string
+      the element, sometimes only delimiter symbol.
+    symbols: >-
+      list of strings
+      alternative to /symbol/ -- provides synonyms
     regex: >-
-      Optional field! Literal string with regex expression of element, if 
-      possible.
+      literal string
+      regular expression (SRE)
+    regexes: >-
+      list of literal strings
+      alternative to /regex/, if multiple expressions are needed.
+    subtypes: >-
+      map
+      if more exhaustive information has to be provided.
+    subtype_fields:
+      name: >-
+        string
+        identifying name for subtype
+      regex: Like /regex/
+      types: >-
+        list of strings or /false/
+        expected return types for groups in regex. /false/ marks an unexpected/false match.
+      quantity: >-
+        integer
+        number of groups that will be returned.
+      idents: >-
+        list of strings
+        identifier names for returned groups, in order
+
   author: bertrandterrier
   lang: Dicer
   created: 2025-11-14
   updated: 2025-11-14
 tokens:
+  run_modes:
+    - id: 1
+      name: "DEBUG"
+      descr: Show all errors, warnings, and messages.
+    - id: 1
+      name: "VERBOSE"
+      descr: Show all warnings, errors, and messages not specifically marked DEBUG (0)
+    - id: 2
+      name: "USER"
+      descr: Show only warnings and errors.
+    - id: 3
+      name: "MINIMAL"
+      descr: Suppress all messages and warnings, not errors.
+    - id: 4
+      name: "SILENT"
+      descr: Suppress all messges if not critical errors.
+  basic:
+    - id: 10
+      name: "EOF"
+      descr: "End of File"
+    - id: 11
+      name: "EOE"
+      descr: "End of Expression"
+    - id: 12
+      name: "EOP"
+      descr: "End of Process"
+  errors:
+    - id: 20
+      name: "ERROR"
+      descr: Basic Error. To catch non-processables
+    - id: 21
+      name: "SYNTAX ERROR"
+    - id: 22
+      name: "TYPE ERROR"
+      descr: Invalid type.
+    - id: 23
+      name: "CALL ERROR"
+      descr: Child process error.
+      subtypes:
+        - Shell process error.
+  warnings:
+    - id: 30
+      name: "WARNING"
+      descr: Indeterminate warning.
   delimiter:
     - id: 1000
       name: "lpar"
@@ -288,7 +362,7 @@ tokens:
     - id: 1600
       name: "rspec"
       descr: Range Specification
-      regex_return:
+      subtypes:
         - name: "range_max"
           regex: '\d+'
           quantity: 1
@@ -306,7 +380,7 @@ tokens:
     - id: 1600
       name: "odds"
       descr: Odds Specification
-      regex_return:
+      subtypes:
         - name: "binary"
           regex: '([1-9][0-9]*)\.{0,1}([1-9]*)\|([1-9][0-9]*)\.{0,1}(\d*)'
           quantity: 4

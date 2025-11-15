@@ -1,14 +1,5 @@
 import dicer as dcr
 
-import dicer as dcr
-from dicer.schemes import Point, TokenType, EOF, eof
-
-NEWLINE = "\n"
-BREAKMARK = ";;"
-NEXTMARK = ";"
-TAB = "\t"
-SPACE = " "
-
 
 class DcrTokenID(int):
     __reg: list[int] = [0]
