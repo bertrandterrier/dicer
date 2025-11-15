@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from dicer.schemes import *
 from dicer import functions as fn
+from dicer import io_ops as io
 
 DCR_PY_HOME: Path = Path(__file__).parent
 

@@ -6,6 +6,7 @@ NEWLINE = "\n"
 SPACE = " "
 SLASH = "/"
 TERM = ";"
+PERIOD = "."
 
 # --- EOF ---
 class eof(str):
@@ -331,3 +332,41 @@ class TokenData:
 
     def get_find(self, arg: str, **kwargs) -> str|Any:
         return self.search(arg, mode='find', **kwargs)
+
+class RunTokenType(str):
+    __slots__ = ("_names", "_pair", "_pair_sym")
+    def __new__(cls,
+                *args,
+                pair: bool = False,
+                closing_sym: "RunTokenType|str|None" = None
+                ) -> "RunTokenType":
+        name = PERIOD.join([str(p) for p in args])
+        inst = super().__new__(cls, name)
+        inst._names = [str(p) for p in args]
+        inst._pair_sym = closing_sym
+        inst._pair = pair
+        return inst
+
+    def ispair(self) -> bool:
+        return bool(self._pair)
+
+    def close(self, other: "str|RunTokenType") -> bool:
+        other_name, other_side = (None, None)
+
+        if isinstance(other, "RunTokenType"):
+            other_name, other_side = (other._names[-2], other._names[-1])
+        elif not isinstance(other, str) or not len(other) >= 5:
+            return False
+        elif not other.count('.') > 1:
+            return False
+        else:
+            other_name, other_side = other.split('.')
+
+        if not other_name.endswith(self._names[-2]):
+            return False
+        elif other_side == 'right' and self._names[-1] == 'left':
+            return True
+        elif other_side == 'left' and self._names[-1] == 'right':
+            return True
+        else:
+            return False

@@ -25,8 +25,6 @@ def get_comment(lxr: Lexer, data: TokenData) -> Lexer:
     return
 
 
-
-
 def init(src: str) -> Lexer:
     lxr: Lexer = dcrlexer.init_lexer(src)
     return lxr

@@ -1,9 +1,6 @@
-from typing import Any, Callable, Literal
-
 import dicer as dcr
 
-from dicer.schemes import Point, DcrTokenType, NEWLINE, EOF, eof, TERM
-
+from dicer.tokens import Point, DcrTokenType, NEWLINE, EOF, TERM
 
 class DcrTokenID(int):
     __reg: list[int] = [0]
@@ -16,7 +13,6 @@ class DcrTokenID(int):
     def get_next_id(cls) -> int:
         cls.__reg.append(cls.__reg[-1] + 1)
         return cls.__reg[-1]
-
 
 class DcrToken(tuple):
     __slots__ = ("_id", "_start", "_end",
@@ -60,7 +56,7 @@ class DcrToken(tuple):
     def get_token_type(self) -> str:
         return str(self._token_obj)
 
-class Lexer:
+class DcrLexer:
     def __init__(self, src: str):
         self._data: list[DcrToken] = []
         self._buf: str = src
@@ -75,13 +71,12 @@ class Lexer:
 
 
 
-
-class DcrLexer:
+class LexHandler:
     __slots__ = ("__src", "_lxr", "_trc", "_bu",
                  "_trc_lim", "_bu_lim",
                  "_crsr")
 
-    def __new__(cls) -> "DcrLexer":
+    def __new__(cls) -> "LexHandler":
         inst = object.__new__(cls)
         inst._trc, inst._bu = [[], []]
         inst._crsr = 0
@@ -95,21 +90,21 @@ class DcrLexer:
         return False
 
 
-    def init_lexer(self, src: str, trace_limit: int = 30, backup_limit: int = 1) -> Lexer:
+    def init_lexer(self, src: str, trace_limit: int = 30, backup_limit: int = 1) -> DcrLexer:
         if getattr(self, '_lxr'):
-            raise PermissionError("To overwrite lexer use 'clean_reset_lexer'")
-        self._lxr = Lexer(src)
+            raise PermissionError("To overwrite DcrLexer use 'clean_reset_DcrLexer'")
+        self._lxr = DcrLexer(src)
         self.__src = src
         self._trc_lim = trace_limit
         self._bu_lim = backup_limit
         return self._lxr
 
-    def clean_reset_lexer(self) -> Lexer:
+    def clean_reset_lexer(self) -> DcrLexer:
         self._crsr = 0
-        self._lxr = Lexer(self.__src)
+        self._lxr = DcrLexer(self.__src)
         return self._lxr
 
-    def del_lexer_stages(self, steps: int = 1) -> Lexer:
+    def del_lexer_stages(self, steps: int = 1) -> DcrLexer:
         if len(self._trc) < 1:
             raise LookupError("No trace found")
         snapshot, steps = (self._trc.pop(), steps - 1)
@@ -137,17 +132,17 @@ class DcrLexer:
             raise LookupError("No cursor")
         return crsr
 
-    def lookahead(self, lxr: Lexer) -> str:
+    def lookahead(self, lxr: DcrLexer) -> str:
         return lxr._buf[self.cursor()]
 
     def force_cursor(self) -> None:
         self._crsr += 1
 
-    def force_lexer(self, lxr) -> Lexer:
+    def force_lexer(self, lxr) -> DcrLexer:
         self._lxr = lxr
         return self._lxr
     
-    def advance(self, lxr: Lexer, skip: bool):
+    def advance(self, lxr: DcrLexer, skip: bool):
         if not skip:
             lxr._cache['payload'] = str(lxr._cache['payload']) + self.lookahead(lxr)
         if lxr._buf[self.cursor()] in [NEWLINE, TERM]:
@@ -170,9 +165,7 @@ class DcrLexer:
             return char.lower() in [e.lower() for e in arg]
         return False
 
-
-    
-    def mark_type(self, lxr: Lexer, _type: DcrTokenType) -> Lexer:
+    def mark_type(self, lxr: DcrLexer, _type: DcrTokenType) -> DcrLexer:
         if lxr._col == 0:
             lxr._cache['end_row'] = lxr._row - 1
             lxr._cache['end_col'] = lxr._last_row_max_col
@@ -194,3 +187,4 @@ class DcrLexer:
                       'start_col': lxr._col,
                       'payload': ""}
         return self.force_lexer(lxr) 
+
