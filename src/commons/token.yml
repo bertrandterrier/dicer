@@ -161,23 +161,18 @@ tokens:
     - id: 1012
       name: "lmlcmt"
       descr: left multi-line comment delimiter
-      symbol: "~~>" 
-      regex: '~{2}>'
+      symbols: ["<~/", "<~~/"] 
+      regex: '<~{1,}/'
     - id: 1013
       name: "rmlcmt"
       descr: right multi-line comment delimiter
-      symbol: '<~~'
-      regex: '<~{2}'
+      symbols: ["/~", "/~~"]
+      regex: '/~{1,}'
     - id: 1014
-      name: "lilcmt"
-      descr: left in-line comment
-      symbol: "~>"
-      regex: '~>'
-    - id: 1015
-      name: "rilcmt"
-      descr: right in-line comment
-      symbol: "<~"
-      regex: '<~'
+      name: "lcmt"
+      descr: Line comment
+      symbols: ["<~", "<~~"]
+      regex: '<~{1,}'
     - id: 1016
       name: "lellrule"
       descr: element-limited local rule, left delim

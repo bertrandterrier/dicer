@@ -87,6 +87,14 @@ class DcrLexer:
         inst._crsr = 0
         return inst
 
+    def __call__(self, arg) -> bool:
+        if isinstance(arg, str):
+            return self.lookahead(self._lxr) == arg
+        elif isinstance(arg, (list, tuple)):
+            return self.lookahead(self._lxr) in arg
+        return False
+
+
     def init_lexer(self, src: str, trace_limit: int = 30, backup_limit: int = 1) -> Lexer:
         if getattr(self, '_lxr'):
             raise PermissionError("To overwrite lexer use 'clean_reset_lexer'")
@@ -151,11 +159,18 @@ class DcrLexer:
         self.force_cursor()
         return self.force_lexer(lxr)
     
-    def peak_ahead(self, lxr: Lexer, jump: int = 1) -> str|eof:
-        if (self.cursor() + jump) >= len(lxr._buf):
-            return EOF
+    def peak_ahead(self, arg, jump: int = 1) -> bool:
+        if (self.cursor() + jump) >= len(self._lxr._buf):
+            char = EOF
         else:
-            return lxr._buf[self.cursor()]
+            char = self._lxr._buf[self.cursor() + jump]
+        if isinstance(arg, str):
+            return char.lower() == arg.lower()
+        elif isinstance(arg, list):
+            return char.lower() in [e.lower() for e in arg]
+        return False
+
+
     
     def mark_type(self, lxr: Lexer, _type: DcrTokenType) -> Lexer:
         if lxr._col == 0:
