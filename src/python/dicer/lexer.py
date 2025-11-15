@@ -1,3 +1,5 @@
+from typing import Any, Callable, Literal
+
 import dicer as dcr
 
 from dicer.schemes import Point, DcrTokenType, NEWLINE, EOF, eof, TERM
@@ -58,7 +60,7 @@ class DcrToken(tuple):
     def get_token_type(self) -> str:
         return str(self._token_obj)
 
-class DcrLexer:
+class Lexer:
     def __init__(self, src: str):
         self._data: list[DcrToken] = []
         self._buf: str = src
@@ -70,103 +72,110 @@ class DcrLexer:
             'start_col': 0,
             'payload': ""
         }
-        self._cursor: int = 0
 
 
-_history_stor_lim: int = 1
-_backup_stor_lim: int = 23
-_history: list[list[DcrLexer]] = []
-_backup: list[DcrLexer] = []
 
-lexer: DcrLexer = DcrLexer("")
 
-def get_snap(step_mod: int = 0) -> DcrLexer:
-    var_backup = [lxr for lxr in _backup]
-    var_lxr = var_backup.pop(0)
-    while step_mod > 0:
-        if not var_backup:
-            return var_lxr
-        var_lxr = var_backup.pop()
-        step_mod -= 1
-    return var_lxr
+class DcrLexer:
+    __slots__ = ("__src", "_lxr", "_trc", "_bu",
+                 "_trc_lim", "_bu_lim",
+                 "_crsr")
 
-def reset_lexer(steps_back: int = 1):
-    global lexer
-    lexer = get_snap(steps_back - 1)
-    return lexer
+    def __new__(cls) -> "DcrLexer":
+        inst = object.__new__(cls)
+        inst._trc, inst._bu = [[], []]
+        inst._crsr = 0
+        return inst
 
-def mkbackup() -> None:
-    global _backup
-    _backup.append(lexer)
-    while len(_backup) > _backup_stor_lim and len(_backup) > 0:
-        _backup.pop(0)
+    def init_lexer(self, src: str, trace_limit: int = 30, backup_limit: int = 1) -> Lexer:
+        if getattr(self, '_lxr'):
+            raise PermissionError("To overwrite lexer use 'clean_reset_lexer'")
+        self._lxr = Lexer(src)
+        self.__src = src
+        self._trc_lim = trace_limit
+        self._bu_lim = backup_limit
+        return self._lxr
 
-def write_to_history() -> None:
-    global _history
-    _history.append(_backup)
-    while len(_history) > _history_stor_lim and len(_history) > 0:
-        _history.pop(0)
-        
+    def clean_reset_lexer(self) -> Lexer:
+        self._crsr = 0
+        self._lxr = Lexer(self.__src)
+        return self._lxr
 
-def mklxr(src: str,
-            backup_max: int =_backup_stor_lim,
-            hist_max: int = _history_stor_lim,
-            ) -> DcrLexer:
-    global _history_stor_lim, _backup_stor_lim
-    _history_stor_lim = hist_max
-    _backup_stor_lim = backup_max
+    def del_lexer_stages(self, steps: int = 1) -> Lexer:
+        if len(self._trc) < 1:
+            raise LookupError("No trace found")
+        snapshot, steps = (self._trc.pop(), steps - 1)
+        while steps > 0 and self._trc:
+            snapshot = self._trc.pop()
+            steps -= 1
+        self._crsr, self._lxr = snapshot
+        return self._lxr
 
-    write_to_history()
-    global lexer
-    lexer = DcrLexer(src)
-    return lexer
 
-def setlxr(lxr: DcrLexer) -> DcrLexer:
-    mkbackup()
-    global lexer
-    lexer = lxr
-    return lexer
+    def make_snapshot(self) -> None:
+        self._trc.append(self._lxr)
+        while len(self._trc) > self._trc_lim and len(self._trc) > 0:
+            self._trc.pop(0)
+    
+    def make_backup(self) -> None:
+        self._bu.append(self._lxr)
+        while len(self._bu) > self._bu_lim and len(self._bu) > 0:
+            self._bu.pop(0)
+            
+   
+    def cursor(self) -> int:
+        crsr = getattr(self, '_crsr', None)
+        if not isinstance(crsr, int):
+            raise LookupError("No cursor")
+        return crsr
 
-def lookahead(lxr: DcrLexer) -> str:
-    return lxr._buf[lxr._cursor]
+    def lookahead(self, lxr: Lexer) -> str:
+        return lxr._buf[self.cursor()]
 
-def advance(lxr: DcrLexer, skip: bool):
-    if not skip:
-        lxr._cache['payload'] = str(lxr._cache['payload']) + lookahead(lxr)
-    if lxr._buf[lxr._cursor] in [NEWLINE, TERM]:
-        lxr._row += 1
-        lxr._last_row_max_col = lxr._col
-        lxr._col = 0
-    else:
-        lxr._col += 1
-    lxr._cursor += 1
-    return setlxr(lxr)
+    def force_cursor(self) -> None:
+        self._crsr += 1
 
-def peak_ahead(lxr: DcrLexer, jump: int = 1) -> str|eof:
-    if (lxr._cursor + jump) >= len(lxr._buf):
-        return EOF
-    else:
-        return lxr._buf[lxr._cursor]
-
-def mark_type(lxr: DcrLexer, _type: DcrTokenType) -> DcrLexer:
-    if lxr._col == 0:
-        lxr._cache['end_row'] = lxr._row - 1
-        lxr._cache['end_col'] = lxr._last_row_max_col
-    else:
-        lxr._cache['end_row'] = lxr._row
-        lxr._cache['end_col'] = lxr._col - 1
-
-    lxr._data.append(
-        DcrToken(_type,
-                 Point(lxr._cache['start_row'],
-                       lxr._cache['start_col'],
-                       'start'),
-                 Point(lxr._cache['end_row'],
-                       lxr._cache['end_col'],
-                       'end'),
-                 payload = lxr._cache['payload']), # pyright: ignore
-    )
-    lxr._cache = {'start_row': lxr._row,
-                  'start_col': lxr._col,
-                  'payload': ""}
-    return setlxr(lxr)
+    def force_lexer(self, lxr) -> Lexer:
+        self._lxr = lxr
+        return self._lxr
+    
+    def advance(self, lxr: Lexer, skip: bool):
+        if not skip:
+            lxr._cache['payload'] = str(lxr._cache['payload']) + self.lookahead(lxr)
+        if lxr._buf[self.cursor()] in [NEWLINE, TERM]:
+            lxr._row += 1
+            lxr._last_row_max_col = lxr._col
+            lxr._col = 0
+        else:
+            lxr._col += 1
+        self.force_cursor()
+        return self.force_lexer(lxr)
+    
+    def peak_ahead(self, lxr: Lexer, jump: int = 1) -> str|eof:
+        if (self.cursor() + jump) >= len(lxr._buf):
+            return EOF
+        else:
+            return lxr._buf[self.cursor()]
+    
+    def mark_type(self, lxr: Lexer, _type: DcrTokenType) -> Lexer:
+        if lxr._col == 0:
+            lxr._cache['end_row'] = lxr._row - 1
+            lxr._cache['end_col'] = lxr._last_row_max_col
+        else:
+            lxr._cache['end_row'] = lxr._row
+            lxr._cache['end_col'] = lxr._col - 1
+    
+        lxr._data.append(
+            DcrToken(_type,
+                     Point(lxr._cache['start_row'],
+                           lxr._cache['start_col'],
+                           'start'),
+                     Point(lxr._cache['end_row'],
+                           lxr._cache['end_col'],
+                           'end'),
+                     payload = lxr._cache['payload']), # pyright: ignore
+        )
+        lxr._cache = {'start_row': lxr._row,
+                      'start_col': lxr._col,
+                      'payload': ""}
+        return self.force_lexer(lxr) 
