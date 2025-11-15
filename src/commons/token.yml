@@ -1,0 +1,324 @@
+_meta:
+  description: >-
+    Token types for the Dicer lexer/parser.
+
+    !! Ignore all fields starting with '_' !!
+
+    - nesting:
+      "tokens" -> list of dictionary carrying list of dictionaries.
+      The file is nested in two levels. Just iterate threw fields that have a nested
+      dictionary and extract this to flatten.
+  fields:
+    id: >-
+      Containing three digit number with first digit as higher group and other 
+      digits counting up.
+    name:
+      String with real name.
+    descr:
+      (multiline) string with description.
+    symbol: Optional field! String with symbol, if possible.
+    regex: >-
+      Optional field! Literal string with regex expression of element, if 
+      possible.
+  author: bertrandterrier
+  lang: Dicer
+  created: 2025-11-14
+  updated: 2025-11-14
+tokens:
+  delimiter:
+    - id: 1000
+      name: "lpar"
+      descr: left parenthesis
+      symbol: "("
+      regex: ''
+    - id: 1001
+      name: "rpar"
+      descr: right parenthesis
+      symbol: ")"
+      regex: "'"
+    - id: 1002
+      name: "rbrack"
+      descr: right square bracket
+      symbol: "["
+      regex: '\['
+    - id: 1003
+      descr: "]"
+      symbol: "left square bracket"
+      regex: '\]'
+    - id: 1004
+      descr: "right curly bracket"
+      symbol: "}"
+      regex: '\}'
+    - id: 1005
+      name: "lbrace"
+      descr: left curly bracket
+      symbol: "{"
+      regex: '\{'
+    - id: 1006
+      descr: "lmath"
+      symbol: "left math angle bracket"
+      regex: '⟨'
+    - id: 1007
+      name: "rmath"
+      descr: right math angle bracket
+      symbol: ⟩ 
+      regex: '⟩'
+    - id: 1008
+      name: "squote"
+      descr: single quotation mark
+      symbol: "'"
+      regex: "'"
+    - id: 1009
+      name: "dquote"
+      descr: double quotation mark
+      symbol: '"'
+      regex: '"'
+    - id: 1010
+      name: "sep"
+      descr: element seperator symbols space or semicolon
+      symbols: [",", " "]
+      regex: '[,\s]'
+    - id: 1011
+      name: "term"
+      descr: line terminator -- newline or double semicolon
+      symbols: ['\n', ";"]
+      regexes: ['\n', ';']
+    - id: 1012
+      name: "lmlcmt"
+      descr: left multi-line comment delimiter
+      symbol: "~~>" 
+      regex: '~{2}>'
+    - id: 1013
+      name: "rmlcmt"
+      descr: right multi-line comment delimiter
+      symbol: '<~~'
+      regex: '<~{2}'
+    - id: 1014
+      name: "lilcmt"
+      descr: left in-line comment
+      symbols: "~>"
+      regex: '~>'
+    - id: 1015
+      name: "rilcmt"
+      descr: right in-line comment
+      symbol: "<~"
+      regex: '<~'
+    - id: 1016
+      name: "rllrule"
+      descr: right locally limited element rule
+      symbol: ">-"
+      regex: '>-'
+    - id: 1017
+      name: "lllrule"
+      descr: left locally limited rule
+      symbols: "-<"
+      regex: '-<'
+    - id: 1018
+      name: "rullrule"
+      descr: right unlimited local rule
+      symbol: "<-<"
+      regex: '<-<'
+    - id: 1019
+      name: "lullrule"
+      descr: right unlimited local rule
+      symbol: ">->"
+      regex: '>->'
+    - id: 1020
+      name: "rgrule"
+      descr: right global rule
+      symbol: ">=>"
+    - id: 1021
+      name: "lgrule"
+      descr: left global rule
+      symbol: "<=<"
+      regex: "<=<"
+  trigger:
+    - id: 1100
+      name: "exmark"
+      descr: Exclamation mark -- NEGATION 
+      symbol: "!"
+      regex: '!'
+    - id: 1101
+      name: "qmark"
+      descr: Questin mark -- QUERY
+      symbol: "?"
+      regex: '\?'
+    - id: 1102
+      name: "peso"
+      descr: Peso/dollar -- REFERENCE
+      symbol: "$"
+      regex: '\$'
+    - id: 1103
+      name: "hash"
+      descr: number sign -- EVALUE 
+      symbol: "#"
+      regex: '#'
+  connectives:
+    - id: 1200
+      name: "amp"
+      descr: Ampersand -- CONCATENATION "AND"
+      symbol: "&"
+      regex: '&'
+    - id: 1201
+      name: "bar"
+      descr: Pipe bar -- PIPE
+      symbol: "|"
+      regex: '\|'
+    - id: 1202
+      name: "dbar"
+      descr: Double pipe bar -- ALTERNATION "OR (exclusive)"
+      symbol: "||"
+      regex: '\|{2}'
+    - id: 1203
+      name: "top"
+      descr: Top limiter
+      symbol: "^"
+      regex: '\^'
+    - id: 1204
+      name: "uscore"
+      descr: Bottom limiter
+      symbol: "_"
+      regex: '_'
+  weak_connectives:
+    - id: 1300
+      name: "at"
+      descr: Attribute connective
+      symbol: "@"
+      regex: '@'
+    - id: 1301
+      name: "dot"
+      descr: Method
+      symbol: "."
+      regex: '\.'
+  operators:
+    - id: 1400
+      name: "plus"
+      descr: Addition or context concatenation procedure
+      symbol: "+"
+      regex: '\+'
+    - id: 1401
+      name: "dash"
+      descr: Subtraction or negative concatenation procedure
+      symbol: "-"
+      regex: '-'
+    - id: 1401
+      name: "star"
+      descr: Multiplication
+      symbol: "*"
+      regex: '\*'
+    - id: 1402
+      name: "slash"
+      descr: Division or negative modification procedure
+      symbol: "/"
+      regex: '/'
+    - id: 1403
+      name: "dslash.uscore"
+      descr: floor operation
+      symbol: "/_"
+      regex: '/_'
+    - id: 1404
+      name: "dslash.top"
+      descr: roof operation
+      symbol: "/^"
+      regex: '/^'
+    - id: 1405
+      name: "gt"
+      descr: Greater than
+      symbol: ">"
+      regex: '>'
+    - id: 1406
+      name: "gte"
+      descr: Greater than or equal
+      symbol: ">="
+      regex: '>='
+    - id: 1407
+      name: "lt"
+      descr: Lower than
+      symbol: "<"
+      regex: '<'
+    - id: 1408
+      name: "lte"
+      descr: Smaller than or equal
+      symbol: "<="
+      regex: '<='
+  command_keywords:
+    - id: 1500
+      name: "dice"
+      descr: Dice command
+      symbols: ["dice", "d", "D", "DICE"]
+      regex: ['[dD]', '[dD][iI][cC][eE]']
+    - id: 1501
+      name: "query"
+      descr: Query
+      symbols: ["q", "query", "Q", "Query", "QUERY"]
+      regexes: ['[qQ]', '[qQ][uU][eE][rR][yY]']
+      methods:
+        - id: 1501.1
+          name: "find"
+          descr: Returns 
+    - id: 1502
+      name: "calc"
+      descr: Calculation command
+      symbols: []
+    - id: 1503
+      name: "count"
+      descr: "Count command"
+      symbols: ["c", "count", "C", "Count", "COUNT"] 
+      regexes: ['c', '[cC][oO][uU][nN][tT]']
+    - id: 1504
+      name: "sh"
+      descr: Shell command
+      symbols: ["sh", "SH", "Sh", "Shell", "SHELL"]
+      regexes: ['[sS][hH]', '[sS][hH][eE][lL]{2}']
+    - id: 1505
+      name: "pcall"
+      descr: Protected call
+      symbols: ["try", "Try", "TRY", "p", "P"]
+      regexes: ['[pP]', '[tT]', '[tT][rR][yY]']
+    - if: 1506
+      name: "if"
+      descr: Condition Command
+      symbols: ["if", "If", "IF"]
+      regex: '[iI][fF]'
+    - while: 1507
+      descr: Condition loop
+      symbols: ["wh", "Wh", "WH","while", "While", "WHILE"]
+      regexes: ['[wW][hH]', '[wW][hH][iI][lL][eE]']
+  constructors:
+    - id: 1600
+      name: "rspec"
+      descr: Range Specification
+      regex_return:
+        - name: "range_max"
+          regex: '\d+'
+          quantity: 1
+          idents: ["max"]
+          types: ["int"]
+        - name: "range"
+          regex: '([\-\+]{0,1}\d*):([\-\+]{0,1}\d*):([\-\+]{0,1}\d+)'
+          quantity: 3
+          identifiers: ["min", "steps", "max"]
+          defaults: [1, 1, false]
+          types:
+            - ["null", "int"]
+            - ["null", "int"]
+            - "int"
+    - id: 1600
+      name: "odds"
+      descr: Odds Specification
+      regex_return:
+        - name: "binary"
+          regex: '([1-9][0-9]*)\.{0,1}([1-9]*)\|([1-9][0-9]*)\.{0,1}(\d*)'
+          quantity: 4
+          idents: ["win", "critical_win", "loss", "critical_loss"]
+          types: ["int", "int|null", "int", "int|null"]
+          defaults: [false, 0, false, 0]
+        - name: "tenary"
+          regex: '([1-9][0-9]+)\.{0,1}([0-9]*)\|([1-9][0-9]+)\.([0-9]+)\|([1-9][0-9]+)'
+        - idents: ["win", "critical_win", "loss", "critical_loss", "neutral"]
+        - types: ["int", "int|null", "int", "int|null", "int"]
+        - defaults: [false, 1, false, 1, false]
+    - id: 1601
+      name: "chance"
+      descr: Chance percentage
+      regex: '(\d{0,2}[1-9])%'
