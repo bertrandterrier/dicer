@@ -14,3 +14,8 @@ def write_yaml(data: dict|list,
     with open(file, 'w') as f:
         yaml.dump(data, f)
     return
+
+def load_txt(file: str|Path) -> str:
+    with open(file, 'r') as f:
+        cont = f.read()
+    return cont

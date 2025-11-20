@@ -1,0 +1,49 @@
+# [build-system]
+# requires = []
+# build-backend = ""
+
+[project]
+name = "dicer"
+version = "0.1.0"
+requires-python = ">=3.13" 
+authors = [
+  { name = "Immanuel Stemmert", email = "bertrandterrier@devmule.net" }
+]
+maintainers = [
+  { name = "Immanuel Stemmert", email = "bertrandterrier@devmule.net" }
+]
+description = "Lexer and parser for DicerLang"
+# readme = ""
+# dependencies = []
+# license = ""
+# keywords = []
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.13.8",
+
+  "Programming Language :: Dicer :: 1",
+
+  "Environment :: Console",
+  "Operating System :: Linux",
+  "Operating System :: Linux :: ArchLinux",
+
+  "Intendet Audience :: Developers",
+  "Intendet Audience :: RPG",
+  "Intendet Audience :: Tabletop-Gamers",
+
+  "Language :: English",
+  "Language :: German"
+]
+
+# [project.script]
+# to make commands available
+
+# [project.optional-dependencies]
+# gui = []
+# cli = []
+
+[project.urls]
+Repository = "https://github.com/bertrandterrier/dicer"
