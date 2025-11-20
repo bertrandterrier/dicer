@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 from random import choices
+import re
 from string import ascii_letters, digits
-from typing import Iterable, Iterator, Literal, Callable, LiteralString
+from typing import Literal, LiteralString, Pattern
 
 ALPHANUMS: str = ascii_letters + digits + "_"
 
@@ -10,44 +10,44 @@ SPACE: str = " "
 TAB: str = "\t"
 EMPTY: str = ""
 
-class eos(str):
-    def __new__(cls) -> "eos":
+class Eos(str):
+    def __new__(cls) -> "Eos":
         return super().__new__(cls, ";")
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, eos):
+        if isinstance(other, Eos):
             return True
         elif str(other) == ";":
             return True
         else:
             return False
 
-class eof(str):
-    def __new__(cls) -> "eof":
+class Eof(str):
+    def __new__(cls) -> "Eof":
         return super().__new__(cls, "END OF FILE")
     def __eq__(self, other) -> bool:
-        if isinstance(other, eof):
+        if isinstance(other, Eof):
             return True
         elif str(other) == ";":
             return True
         else:
             return False
 
-class null(str):
-    def __new__(cls) -> "null":
+class Null(str):
+    def __new__(cls) -> "Null":
         return super().__new__(cls, "EMPTY STRING ELEMENT")
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, null):
+        if isinstance(other, Null):
             return True
         elif str(other) == ";":
             return True
         else:
             return False
 
-NULL = null()
-EOF = eof()
-EOS = eos()
+NULL = Null()
+EOF = Eof()
+EOS = Eos()
 
 Point = tuple[int, int]
 
@@ -91,60 +91,39 @@ class DcrToken:
     def lrange(self) -> list[int]:
         return list(range(self.lstart(), self.lend() + 1))
 
-CheckFuncPair = tuple[Callable[[str, str], bool], str|list[str]]
-class GuessRule:
-    def __init__(
-        self,
-        *tests: str|LiteralString|Callable[[str], bool]|CheckFuncPair,
-    ):
-        self._tcomps: list[str] = []
-        self._tpttrns: list[LiteralString] = [] 
-        self._t1funcs: list[Callable[[str], bool]] = []
-        self._t2funcs: list[CheckFuncPair] = []
+GuessRule= tuple[str|LiteralString|Pattern, list[str]|str]
 
-        for t in tests:
-            if isinstance(t, LiteralString):
-                self._tpttrns.append(t)
-            elif isinstance(t, str):
-                self._tcomps.append(t)
-            elif isinstance(t, Callable):
-                self._t1funcs.append(t)
-            elif isinstance(t, tuple):
-                self._t2funcs.append(t)
+class Guess:
+    def __init__(self, *rules: GuessRule):
+        self._rules: list[tuple[str|Pattern, list[str]]] = []
+        self._left: list[str] = []
+
+        for rule, item in rules:
+            if isinstance(rule, LiteralString):
+                rule = re.compile(rule)
+            if isinstance(item, str):
+                item = [item]
+            self._rules.append((rule, item))
+            self._left+= item
+
+    def check(self, arg: str) -> int:
+        left = []
+        new_rules: list[tuple[str|Pattern, list[str]]] = []
+        rules = [t for t in self._rules]
+
+        for r, tps in rules:
+            if isinstance(r, str):
+                matched = r in arg or r == arg
+            elif isinstance(r, Pattern):
+                matched = r.match(arg)
             else:
                 raise TypeError()
 
+            if matched:
+                new_rules.append((r, tps))
+                left += [t for t in tps if not tps in left]
+        self._rules, self._left = (new_rules, left)
+        return len(self._left)
 
-class GuessBranch:
-    NAME_LTTR_NUM: int = 8
-    _reg: list[str] = []
-    
-    @classmethod
-    def getname(cls, length: int = NAME_LTTR_NUM, selection_source: str = ALPHANUMS) -> str:
-        if length < 1:
-            raise ValueError()
-        name = ""
-        while len(name) == 0 or name in cls._reg:
-            name = EMPTY.join(choices(ALPHANUMS, k = max(1, abs(length))))
-        return name
-
-    @classmethod
-    def regname(cls, name) -> Literal[0, 1]:
-        if len(name) < 1 or name in cls._reg:
-            return 0
-        else:
-            cls._reg.append(name)
-            return 1
-
-    def __init__(
-        self,
-        null_branch: bool,
-        precedence: int = 0,
-        fin_rules: list[GuessRule],
-        branchings: list[tuple[GuessRule, "GuessBranch"]],
-    ):
-        self._prec: int = precedence
-
-class GuessTree:
-    def __init__(self, name: str, *branches: GuessBranch):
-        self._branches: 
+    def get(self) -> list[str]:
+        return self._left
