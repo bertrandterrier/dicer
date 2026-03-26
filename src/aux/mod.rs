@@ -1,1 +1,2 @@
-pub mod pos;
+pub mod nav;
+pub mod text;

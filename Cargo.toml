@@ -14,6 +14,7 @@ repository = "https://github.com/bertrandterrier/dicer"
 license = "GPL-2"
 
 [dependencies]
+thiserror = "2.0.18"
 
 
 ### PROFILES ###
